@@ -1,0 +1,20 @@
+name: Validate Kubernetes Manifests
+
+# We're telling it when to run: at any pull request towards main
+on:
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  lint-yaml:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout cod
+        uses: actions/checkout@v3
+
+      - name: Verify YAML sintax
+        uses: ibiqlik/action-yamllint@v3
+        with:
+          file_or_dir: k8s/
+          config_file: .github/yamllint-config.yml
+          strict: true
