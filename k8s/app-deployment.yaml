@@ -4,7 +4,7 @@ kind: Deployment
 metadata:
   name: python-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: python-app
@@ -14,13 +14,20 @@ spec:
         app: python-app
     spec:
       containers:
-        - name: app
-          image: pascaleduardmihai/python-app:latest  # Docker Image
-          ports:
-            - containerPort: 5000
-          env:
-            - name: DATABASE_URL
-              value: "postgresql://postgres:password@db-service:5432/testdb"
+      - name: python-app
+        image: pascaleduardmihai/python-app:latest
+        imagePullPolicy: Always
+        env:
+        - name: DB_HOST
+          value: "postgres"
+        - name: DB_NAME
+          value: "testdb"
+        - name: DB_USER
+          value: "pmihai"
+        - name: DB_PASS
+          value: "parola123"
+        ports:
+        - containerPort: 5000
 ---
 apiVersion: v1
 kind: Service
@@ -28,9 +35,9 @@ metadata:
   name: python-app-service
 spec:
   type: NodePort
-  ports:
-    - port: 5000
-      targetPort: 5000
-      nodePort: 30001
   selector:
     app: python-app
+  ports:
+  - port: 5000
+    targetPort: 5000
+    nodePort: 30001p
